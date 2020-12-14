@@ -34,7 +34,7 @@ using namespace std;
 // ----------------------------------------------------------------------------
 
 Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFile,string &iWorkFile,uint32_t savePeriod,bool saveKangaroo,bool saveKangarooByServer,
-                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile) {
+                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile, string st, string en) {
 
   this->secp = secp;
   this->initDPSize = initDPSize;
@@ -64,7 +64,8 @@ Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFi
   this->keyIdx = 0;
   this->splitWorkfile = splitWorkfile;
   this->pid = Timer::getPID();
-
+  this->SetStart(st);
+  this->SetEnd(en);
   CPU_GRP_SIZE = 1024;
 
   // Init mutex
@@ -116,14 +117,17 @@ bool Kangaroo::ParseConfigFile(std::string &fileName) {
 
   }
 
-  if(lines.size()<3) {
+  if(lines.size()<1) {
     ::printf("Error: %s not enough arguments\n",fileName.c_str());
     return false;
   }
 
-  rangeStart.SetBase16((char *)lines[0].c_str());
-  rangeEnd.SetBase16((char *)lines[1].c_str());
-  for(int i=2;i<(int)lines.size();i++) {
+//  rangeStart.SetBase16((char *)lines[0].c_str());
+//  rangeEnd.SetBase16((char *)lines[1].c_str());
+//  rangeStart.Rand(255);
+//  rangeEnd = rangeStart;
+//  rangeEnd.Add(1000000000000000);
+  for(int i=0;i<(int)lines.size();i++) {
     
     Point p;
     bool isCompressed;
@@ -149,6 +153,14 @@ bool Kangaroo::IsDP(uint64_t x) {
 
   return (x & dMask) == 0;
 
+}
+
+void Kangaroo::SetStart(string st) {
+	rangeStart.SetBase16((char *)st.c_str());
+}
+
+void Kangaroo::SetEnd(string en) {
+	rangeEnd.SetBase16((char *)en.c_str());
 }
 
 void Kangaroo::SetDP(int size) {

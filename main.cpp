@@ -31,8 +31,8 @@ using namespace std;
 // ------------------------------------------------------------------------------------------
 
 void printUsage() {
-
-  printf("Kangaroo [-v] [-t nbThread] [-d dpBit] [gpu] [-check]\n");
+  printf("\n Modified by IceLand : Keysearch (start and end options) No need in file \n\n");
+  printf("Kangrand [-v] [-t nbThread] [-d dpBit] [gpu] [-check]\n");
   printf("         [-gpuId gpuId1[,gpuId2,...]] [-g g1x,g1y[,g2x,g2y,...]]\n");
   printf("         inFile\n");
   printf(" -v: Print version\n");
@@ -59,6 +59,8 @@ void printUsage() {
   printf(" -sp port: Server port, default is 17403\n");
   printf(" -nt timeout: Network timeout in millisec (default is 3000ms)\n");
   printf(" -o fileName: output result to fileName\n");
+  printf(" -st StartKey: Start Range Key to start scan\n");
+  printf(" -en EndKey: End Range Key to end scan\n");
   printf(" -l: List cuda enabled devices\n");
   printf(" -check: Check GPU kernel vs CPU\n");
   printf(" inFile: intput configuration file\n");
@@ -162,15 +164,11 @@ static int port = 17403;
 static bool serverMode = false;
 static string serverIP = "";
 static string outputFile = "";
+static string st = "";
+static string en = "";
 static bool splitWorkFile = false;
 
 int main(int argc, char* argv[]) {
-
-#ifdef USE_SYMMETRY
-  printf("Kangaroo v" RELEASE " (with symmetry)\n");
-#else
-  printf("Kangaroo v" RELEASE "\n");
-#endif
 
   // Global Init
   Timer::Init();
@@ -183,6 +181,12 @@ int main(int argc, char* argv[]) {
   int a = 1;
   nbCPUThread = Timer::getCoreNumber();
 
+#ifdef USE_SYMMETRY
+  printf("Kangaroo v" RELEASE " (with symmetry)\n");
+#else
+  printf("Kangaroo v" RELEASE " : Added Start End Options\n");
+#endif
+
   while (a < argc) {
 
     if(strcmp(argv[a], "-t") == 0) {
@@ -193,7 +197,7 @@ int main(int argc, char* argv[]) {
       CHECKARG("-d",1);
       dp = getInt("dpSize",argv[a]);
       a++;
-    } else if (strcmp(argv[a], "-h") == 0) {
+	} else if (strcmp(argv[a], "-h") == 0) {
       printUsage();
     } else if(strcmp(argv[a],"-l") == 0) {
 
@@ -241,6 +245,16 @@ int main(int argc, char* argv[]) {
       CHECKARG("-o",1);
       outputFile = string(argv[a]);
       a++;
+	}
+	else if (strcmp(argv[a], "-st") == 0) {
+		CHECKARG("-st", 1);
+		st = string(argv[a]);
+		a++;
+	}
+	else if (strcmp(argv[a], "-en") == 0) {
+		CHECKARG("-en", 1);
+		en = string(argv[a]);
+		a++;
     } else if(strcmp(argv[a],"-wi") == 0) {
       CHECKARG("-wi",1);
       savePeriod = getInt("savePeriod",argv[a]);
@@ -319,7 +333,8 @@ int main(int argc, char* argv[]) {
   }
 
   Kangaroo *v = new Kangaroo(secp,dp,gpuEnable,workFile,iWorkFile,savePeriod,saveKangaroo,saveKangarooByServer,
-                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile);
+                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile, st, en);
+
   if(checkFlag) {
     v->Check(gpuId,gridSize);  
     exit(0);
