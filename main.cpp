@@ -60,7 +60,9 @@ void printUsage() {
   printf(" -nt timeout: Network timeout in millisec (default is 3000ms)\n");
   printf(" -o fileName: output result to fileName\n");
   printf(" -st StartKey: Start Range Key to start scan\n");
-  printf(" -en EndKey: End Range Key to end scan\n");
+  printf(" -en EndKey: End Range Key to end scan; default 10000 Trillion from Start\n");
+  printf(" -rb RandomBit: Start Key from a Random value in this bit range; default 256\n");
+  printf(" -seq SeqRange: Total Keys to check from the start Random Key; default 10000 Trillion Keys\n");
   printf(" -l: List cuda enabled devices\n");
   printf(" -check: Check GPU kernel vs CPU\n");
   printf(" inFile: intput configuration file\n");
@@ -166,6 +168,8 @@ static string serverIP = "";
 static string outputFile = "";
 static string st = "";
 static string en = "";
+static int rb = 256;
+static string seq = "2386f26fc10000";	// 10000 Trillion Keys
 static bool splitWorkFile = false;
 
 int main(int argc, char* argv[]) {
@@ -245,17 +249,23 @@ int main(int argc, char* argv[]) {
       CHECKARG("-o",1);
       outputFile = string(argv[a]);
       a++;
-	}
-	else if (strcmp(argv[a], "-st") == 0) {
+	} else if (strcmp(argv[a], "-st") == 0) {
 		CHECKARG("-st", 1);
 		st = string(argv[a]);
 		a++;
-	}
-	else if (strcmp(argv[a], "-en") == 0) {
+	} else if (strcmp(argv[a], "-en") == 0) {
 		CHECKARG("-en", 1);
 		en = string(argv[a]);
 		a++;
-    } else if(strcmp(argv[a],"-wi") == 0) {
+    } else if (strcmp(argv[a], "-rb") == 0) {
+		CHECKARG("-rb", 1);
+		rb = getInt("rb",argv[a]);
+		a++;
+	} else if (strcmp(argv[a], "-seq") == 0) {
+		CHECKARG("-seq", 1);
+		seq = string(argv[a]);
+		a++;
+	} else if(strcmp(argv[a],"-wi") == 0) {
       CHECKARG("-wi",1);
       savePeriod = getInt("savePeriod",argv[a]);
       a++;
@@ -333,7 +343,7 @@ int main(int argc, char* argv[]) {
   }
 
   Kangaroo *v = new Kangaroo(secp,dp,gpuEnable,workFile,iWorkFile,savePeriod,saveKangaroo,saveKangarooByServer,
-                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile, st, en);
+                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile, st, en, rb, seq);
 
   if(checkFlag) {
     v->Check(gpuId,gridSize);  

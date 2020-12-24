@@ -34,7 +34,7 @@ using namespace std;
 // ----------------------------------------------------------------------------
 
 Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFile,string &iWorkFile,uint32_t savePeriod,bool saveKangaroo,bool saveKangarooByServer,
-                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile, string st, string en) {
+                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile, string st, string en, int32_t rb, string seq) {
 
   this->secp = secp;
   this->initDPSize = initDPSize;
@@ -64,8 +64,7 @@ Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFi
   this->keyIdx = 0;
   this->splitWorkfile = splitWorkfile;
   this->pid = Timer::getPID();
-  this->SetStart(st);
-  this->SetEnd(en);
+  this->SetKeyRange(st, en, rb, seq);
   CPU_GRP_SIZE = 1024;
 
   // Init mutex
@@ -155,13 +154,30 @@ bool Kangaroo::IsDP(uint64_t x) {
 
 }
 
-void Kangaroo::SetStart(string st) {
-	rangeStart.SetBase16((char *)st.c_str());
+void Kangaroo::SetKeyRange(string st, string en, int32_t rb, string seq) {
+	if (st == "") {
+		// use random start
+		if (rb > 256 || rb < 1) { ::printf("Start bit is out of range :%s\n", rb); exit(0);	}
+		rangeStart.Rand(rb);
+		rangeEnd = rangeStart; Int inc = rangeStart; inc.SetBase16((char *)seq.c_str());
+		rangeEnd.Add(&inc);
+	}
+	else {
+		// use start from st and en given
+		rangeStart.SetBase16((char *)st.c_str());
+		if (en == "") {
+			rangeEnd = rangeStart; rangeEnd.Add(10000000000000000);
+		}
+		else {
+			rangeEnd.SetBase16((char *)en.c_str());
+		}
+	}
+
 }
 
-void Kangaroo::SetEnd(string en) {
-	rangeEnd.SetBase16((char *)en.c_str());
-}
+//void Kangaroo::SetEnd(string en) {
+//	rangeEnd.SetBase16((char *)en.c_str());
+//}
 
 void Kangaroo::SetDP(int size) {
 

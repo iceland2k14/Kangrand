@@ -3,6 +3,17 @@
 A Pollard's kangaroo interval ECDLP solver for SECP256K1 (based on VanitySearch engine).\
 **This program is limited to a 125bit interval search.**
 
+# Edits to change Options
+
+Options has been added to start and end the KeySearch range in command line using -st and -en. Ex: -st 1 -en ffffffff
+If -en is not given with -st then default 10000 Trillion keys are taken from start key.
+
+Also a random startbit with a given range is added by using -rb and -seq. Ex: -rb 256 -seq ffffffff
+If none of these 2 start options are given, then random start in 256 bit is taken as start key and 10000 Trillion as Range.
+
+These -st,-en options are complementary to -rb,-seq. both can not be used together.
+The idea is that input Pubkey file must have only public keys, nothing else.
+
 # Feature
 
 <ul>
@@ -20,8 +31,11 @@ Discusion thread: https://bitcointalk.org/index.php?topic=5244940.0
 # Usage
 
 ```
-Kangaroo v2.1
-Kangaroo [-v] [-t nbThread] [-d dpBit] [gpu] [-check]
+Kangaroo v2.1 : Added Start End Options
+
+ Modified by IceLand : Keysearch (start and end options) No need in file
+
+Kangrand [-v] [-t nbThread] [-d dpBit] [gpu] [-check]
          [-gpuId gpuId1[,gpuId2,...]] [-g g1x,g1y[,g2x,g2y,...]]
          inFile
  -v: Print version
@@ -48,6 +62,10 @@ Kangaroo [-v] [-t nbThread] [-d dpBit] [gpu] [-check]
  -sp port: Server port, default is 17403
  -nt timeout: Network timeout in millisec (default is 3000ms)
  -o fileName: output result to fileName
+ -st StartKey: Start Range Key to start scan
+ -en EndKey: End Range Key to end scan; default 10000 Trillion from Start
+ -rb RandomBit: Start Key from a Random value in this bit range; default 256
+ -seq SeqRange: Total Keys to check from the start Random Key; default 10000 Trillion Keys
  -l: List cuda enabled devices
  -check: Check GPU kernel vs CPU
  inFile: intput configuration file
