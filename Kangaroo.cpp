@@ -157,7 +157,7 @@ bool Kangaroo::IsDP(uint64_t x) {
 void Kangaroo::SetKeyRange(string st, string en, int32_t rb, string seq) {
 	if (st == "") {
 		// use random start
-		if (rb > 256 || rb < 1) { ::printf("Start bit is out of range :%s\n", rb); exit(0);	}
+		if (rb > 256 || rb < 1) { ::printf("Start bit is out of range :%d\n", rb); exit(0);	}
 		rangeStart.Rand(rb);
 		rangeEnd = rangeStart; Int inc = rangeStart; inc.SetBase16((char *)seq.c_str());
 		rangeEnd.Add(&inc);
@@ -1078,7 +1078,7 @@ void Kangaroo::Run(int nbThread,std::vector<int> gpuId,std::vector<int> gridSize
 
 
       // Wait for end
-      Process(params,"MK/s");
+      Process(params,"TK/s");
       JoinThreads(thHandles,nbCPUThread + nbGPUThread);
       FreeHandles(thHandles,nbCPUThread + nbGPUThread);
       hashTable.Reset();
