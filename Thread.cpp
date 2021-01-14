@@ -304,16 +304,16 @@ void Kangaroo::Process(TH_PARAM *params,std::string unit) {
     if(isAlive(params) && !endOfSearch) {
       if(clientMode) {
         printf("\r[%.2f %s][GPU %.2f %s][Count 2^%.2f][%s][Server %6s]  ",
-          avgKeyRate / 1000000.0,unit.c_str(),
-          avgGpuKeyRate / 1000000.0,unit.c_str(),
+		  avgKeyRate * avgKeyRate / 1000000.0,unit.c_str(),
+		  avgGpuKeyRate * avgGpuKeyRate / 1000000.0,unit.c_str(),
           log2((double)count + offsetCount),
           GetTimeStr(t1 - startTime + offsetTime).c_str(),
           serverStatus.c_str()
           );
       } else {
         printf("\r[%.2f %s][GPU %.2f %s][Count 2^%.2f][Dead %.0f][%s (Avg %s)][%s]  ",
-          avgKeyRate / 1000000.0,unit.c_str(),
-          avgGpuKeyRate / 1000000.0,unit.c_str(),
+		  avgKeyRate * avgKeyRate / 1000000.0,unit.c_str(),
+		  avgGpuKeyRate * avgGpuKeyRate / 1000000.0,unit.c_str(),
           log2((double)count + offsetCount),
           (double)collisionInSameHerd,
           GetTimeStr(t1 - startTime + offsetTime).c_str(),GetTimeStr(expectedTime).c_str(),
@@ -353,8 +353,8 @@ void Kangaroo::Process(TH_PARAM *params,std::string unit) {
   
   if( !endOfSearch ) {
     printf("\r[%.2f %s][GPU %.2f %s][Cnt 2^%.2f][%s]  ",
-      avgKeyRate / 1000000.0,unit.c_str(),
-      avgGpuKeyRate / 1000000.0,unit.c_str(),
+	  avgKeyRate * avgKeyRate / 1000000.0,unit.c_str(),
+	  avgGpuKeyRate * avgGpuKeyRate / 1000000.0,unit.c_str(),
       log2((double)count),
       GetTimeStr(t1 - startTime).c_str()
       );

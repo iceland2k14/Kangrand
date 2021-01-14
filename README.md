@@ -14,6 +14,30 @@ If none of these 2 start options are given, then random start in 256 bit is take
 These -st,-en options are complementary to -rb,-seq. both can not be used together.
 The idea is that input Pubkey file must have only public keys, nothing else.
 
+# Running Status
+
+```
+.\Kangrand.exe -gpu -t 2 -m 1 -rb 256 -seq ffffffffffffff -o FOUNDKEY.txt .\target_Pubkeys.txt
+Kangaroo v2.1 : Added Start End Options
+Start:4956C9891727D63DA8F9B49FE524C02206504109B416CC454C3E20EB14441F56
+Stop :4956C9891727D63DA8F9B49FE524C02206504109B416CC454D3E20EB14441F55
+Keys :3
+Number of CPU thread: 2
+Range width: 2^56
+Jump Avg distance: 2^28.01
+Number of kangaroos: 2^18.18
+Suggested DP: 7
+Expected operations: 2^29.12
+Expected RAM: 185.6MB
+DP size: 7 [0xFE00000000000000]
+SolveKeyCPU Thread 1: 1024 kangaroos
+SolveKeyCPU Thread 0: 1024 kangaroos
+GPU: GPU #0 Quadro K2100M (3x192 cores) Grid(6x384) (29.5 MB used)
+SolveKeyGPU Thread GPU#0: creating kangaroos...
+SolveKeyGPU Thread GPU#0: 2^18.17 kangaroos [1.3s]
+[1948901416.30 MK/s][GPU 1193969262.41 MK/s][Count 2^29.27][Dead 2][16s (Avg 13s)][155.9/201.6MB]
+```
+
 # Feature
 
 <ul>
