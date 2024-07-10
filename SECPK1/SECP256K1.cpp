@@ -50,10 +50,23 @@ void Secp256K1::Init() {
     }
     GTable[i * 256 + 255] = N; // Dummy point for check function
   }
-
+  
+  isStride = false;
 }
 
 Secp256K1::~Secp256K1() {
+}
+
+void Secp256K1::SetStride(Int *stride, Int *rangeStart, Int *rangeEnd) {
+	isStride = true;
+	::printf("Stride: \n");
+	this->rangeEnd = rangeEnd;
+	this->rangeInit = rangeStart;
+	this->maxRange = rangeEnd;
+	this->maxRange.Sub(&rangeInit);
+	::printf("MaxRange: %s\n", this->maxRange.GetBase16().c_str());
+	this->jump = stride;
+	::printf("Jump: %s\n", this->jump.GetBase16().c_str());
 }
 
 Point Secp256K1::ComputePublicKey(Int *privKey,bool reduce) {
@@ -63,9 +76,25 @@ Point Secp256K1::ComputePublicKey(Int *privKey,bool reduce) {
   Point Q;
   Q.Clear();
 
+  Int pKey = privKey;
+
+  if (isStride) {
+	  Int diff = privKey;
+	  if (maxRange.IsGreaterOrEqual(privKey)) {
+		  diff.Mult(&jump);
+	  }
+	  else if (privKey->IsGreaterOrEqual(&rangeInit) && rangeEnd.IsGreaterOrEqual(privKey)) {
+		  diff.Sub(&rangeInit);
+		  diff.Mult(&jump);
+		  diff.Add(&rangeInit);
+
+	  }
+	  pKey = diff;
+  }
+
   // Search first significant byte
   for (i = 0; i < 32; i++) {
-    b = privKey->GetByte(i);
+    b = pKey.GetByte(i);
     if(b)
       break;
   }
@@ -76,7 +105,7 @@ Point Secp256K1::ComputePublicKey(Int *privKey,bool reduce) {
   }
 
   for(; i < 32; i++) {
-    b = privKey->GetByte(i);
+    b = pKey.GetByte(i);
     if(b)
       Q = Add2(Q, GTable[256 * i + (b-1)]);
   }

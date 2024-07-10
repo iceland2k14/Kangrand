@@ -17,11 +17,75 @@ The idea is that input Pubkey file must have only public keys, nothing else.
 # Running Status
 
 ```
-.\Kangrand.exe -gpu -t 2 -m 1 -rb 256 -seq ffffffffffffff -o FOUNDKEY.txt .\target_Pubkeys.txt
-Kangaroo v2.1 : Added Start End Options
-Start:4956C9891727D63DA8F9B49FE524C02206504109B416CC454C3E20EB14441F56
-Stop :4956C9891727D63DA8F9B49FE524C02206504109B416CC454D3E20EB14441F55
-Keys :3
+Kangrand.exe -st F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525E000000000000 -en F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525EFFFFFFFFFFFF -gpu in48.txt
+Kangaroo v2.2 : Added Start End Stride Options
+Start:F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525E000000000000
+Stop :F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525EFFFFFFFFFFFF
+Keys :1
+Number of CPU thread: 8
+Range width: 2^48
+Jump Avg distance: 2^23.96
+Number of kangaroos: 2^18.21
+Suggested DP: 3
+Expected operations: 2^25.12
+Expected RAM: 185.8MB
+DP size: 3 [0xE000000000000000]
+SolveKeyCPU Thread 1: 1024 kangaroos
+SolveKeyCPU Thread 5: 1024 kangaroos
+SolveKeyCPU Thread 2: 1024 kangaroos
+SolveKeyCPU Thread 4: 1024 kangaroos
+SolveKeyCPU Thread 6: 1024 kangaroos
+SolveKeyCPU Thread 3: 1024 kangaroos
+SolveKeyCPU Thread 7: 1024 kangaroos
+SolveKeyCPU Thread 0: 1024 kangaroos
+GPU: GPU #0 Quadro K2100M (3x192 cores) Grid(6x384) (29.5 MB used)
+SolveKeyGPU Thread GPU#0: creating kangaroos...
+SolveKeyGPU Thread GPU#0: 2^18.17 kangaroos [1.7s]
+
+ verify PK F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525EA4B70CC9E15B
+Key# 0 [1S]Pub:  0x03351D49832DBABB1E61A2C6B1F2EE9654416500228511FA67E1E9265DBBC656E8
+       Priv: 0xF6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525EA4B70CC9E15B
+	   
+
+
+Kangrand.exe -st F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525E000000000000 -en F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525EFFFFFFFFFFFF -stride 3 in48.txt
+Kangaroo v2.2 : Added Start End Stride Options
+Start:F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525E000000000000
+Stop :F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525EFFFFFFFFFFFF
+Keys :1
+Stride:
+MaxRange: FFFFFFFFFFFF
+Jump: 3
+Number of CPU thread: 8
+Range width: 2^48
+Jump Avg distance: 2^23.96
+Number of kangaroos: 2^13.00
+Suggested DP: 8
+Expected operations: 2^25.11
+Expected RAM: 17.4MB
+DP size: 8 [0xFF00000000000000]
+SolveKeyCPU Thread 1: 1024 kangaroos
+SolveKeyCPU Thread 2: 1024 kangaroos
+SolveKeyCPU Thread 5: 1024 kangaroos
+SolveKeyCPU Thread 0: 1024 kangaroos
+SolveKeyCPU Thread 3: 1024 kangaroos
+SolveKeyCPU Thread 4: 1024 kangaroos
+SolveKeyCPU Thread 7: 1024 kangaroos
+SolveKeyCPU Thread 6: 1024 kangaroos
+
+ verify PK F6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525E36E7AEEDF5C9
+Key# 0 [2N]Pub:  0x03351D49832DBABB1E61A2C6B1F2EE9654416500228511FA67E1E9265DBBC656E8
+       Priv: 0xF6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525E36E7AEEDF5C9
+   RealPriv: 0xF6386B50DD4456959FE2178E90FB4C74A505EF2A4C8974F8525EA4B70CC9E15B
+
+Done: Total time 01s
+
+
+.\Kangrand.exe -gpu -t 2 -m 1 -rb 256 -seq ffffffffffffff -o FOUNDKEY.txt test.txt
+Kangaroo v2.2 : Added Start End Stride Options
+Start:95C8E775DA879E923513345C716DC849E0009EBEEF7C0CD9DC9B4F5BBD850966
+Stop :95C8E775DA879E923513345C716DC849E0009EBEEF7C0CD9DD9B4F5BBD850965
+Keys :7
 Number of CPU thread: 2
 Range width: 2^56
 Jump Avg distance: 2^28.01
@@ -34,8 +98,8 @@ SolveKeyCPU Thread 1: 1024 kangaroos
 SolveKeyCPU Thread 0: 1024 kangaroos
 GPU: GPU #0 Quadro K2100M (3x192 cores) Grid(6x384) (29.5 MB used)
 SolveKeyGPU Thread GPU#0: creating kangaroos...
-SolveKeyGPU Thread GPU#0: 2^18.17 kangaroos [1.3s]
-[1948901416.30 MK/s][GPU 1193969262.41 MK/s][Count 2^29.27][Dead 2][16s (Avg 13s)][155.9/201.6MB]
+SolveKeyGPU Thread GPU#0: 2^18.17 kangaroos [1.2s]
+[3567.79 TK/s][GPU 2122.71 TK/s][Count 2^27.59][Dead 0][04s (Avg 09s)][50.2/84.1MB]
 ```
 
 # Feature

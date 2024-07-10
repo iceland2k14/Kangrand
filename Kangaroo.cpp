@@ -64,6 +64,7 @@ Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFi
   this->keyIdx = 0;
   this->splitWorkfile = splitWorkfile;
   this->pid = Timer::getPID();
+  this->isStride = false;
   this->SetKeyRange(st, en, rb, seq);
   CPU_GRP_SIZE = 1024;
 
@@ -77,6 +78,17 @@ Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFi
   signal(SIGPIPE, SIG_IGN);
 #endif
 
+}
+
+// ----------------------------------------------------------------------------
+
+void Kangaroo::SetStride(std::string &stride) {
+	//    ::printf("Stride %s\n", stride.c_str());
+	Int _stride;
+	_stride.SetBase16((char *)stride.c_str());
+	secp->SetStride(&_stride, &rangeStart, &rangeEnd);
+	this->isStride = true;
+	this->stride = _stride;
 }
 
 // ----------------------------------------------------------------------------
@@ -158,7 +170,12 @@ void Kangaroo::SetKeyRange(string st, string en, int32_t rb, string seq) {
 	if (st == "") {
 		// use random start
 		if (rb > 256 || rb < 1) { ::printf("Start bit is out of range :%d\n", rb); exit(0);	}
-		rangeStart.Rand(rb);
+		int i = 0;
+		while (i < 120) {
+			rangeStart.Rand(rb); 
+			if (rangeStart.GetBitLength() == rb) { break; }
+			i++;
+		}
 		rangeEnd = rangeStart; Int inc = rangeStart; inc.SetBase16((char *)seq.c_str());
 		rangeEnd.Add(&inc);
 	}
@@ -172,7 +189,11 @@ void Kangaroo::SetKeyRange(string st, string en, int32_t rb, string seq) {
 			rangeEnd.SetBase16((char *)en.c_str());
 		}
 	}
-
+	if (this->isStride) {
+		rangeEnd.Sub(&rangeStart);
+		rangeEnd.Div(&stride);
+		rangeEnd.Add(&rangeStart);
+	}
 }
 
 //void Kangaroo::SetEnd(string en) {
@@ -221,11 +242,22 @@ bool Kangaroo::Output(Int *pk,char sInfo,int sType) {
   if(!needToClose)
     ::printf("\n");
 
+  ::fprintf(f, " verify PK %s  \n", pk->GetBase16().c_str());
+
   Point PR = secp->ComputePublicKey(pk);
 
   ::fprintf(f,"Key#%2d [%d%c]Pub:  0x%s \n",keyIdx,sType,sInfo,secp->GetPublicKeyHex(true,keysToSearch[keyIdx]).c_str());
   if(PR.equals(keysToSearch[keyIdx])) {
     ::fprintf(f,"       Priv: 0x%s \n",pk->GetBase16().c_str());
+	if (this->isStride) {
+		Int realK = pk;
+		realK.Sub(&rangeStart);
+		realK.Mult(&stride);
+
+		realK.Add(&rangeStart);
+		
+		::fprintf(f, "   RealPriv: 0x%s \n", realK.GetBase16().c_str());
+	}
   } else {
     ::fprintf(f,"       Failed !\n");
     if(needToClose)

@@ -32,7 +32,7 @@
 #define GPU_GRP_SIZE 128
 
 // GPU number of run per kernel call
-#define NB_RUN 64
+#define NB_RUN 16
 
 // Kangaroo type
 #define TAME 0  // Tame kangaroo

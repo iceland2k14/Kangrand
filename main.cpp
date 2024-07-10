@@ -31,10 +31,10 @@ using namespace std;
 // ------------------------------------------------------------------------------------------
 
 void printUsage() {
-  printf("\n Modified by IceLand : Keysearch (start and end options) No need in file \n\n");
+  printf("\n Modified by IceLand : Keysearch (start and end options) No need in file. Stride. \n\n");
   printf("Kangrand [-v] [-t nbThread] [-d dpBit] [gpu] [-check]\n");
   printf("         [-gpuId gpuId1[,gpuId2,...]] [-g g1x,g1y[,g2x,g2y,...]]\n");
-  printf("         inFile\n");
+  printf("         [-st StartKey -en EndKey -stride Stride] inFile\n");
   printf(" -v: Print version\n");
   printf(" -gpu: Enable gpu calculation\n");
   printf(" -gpuId gpuId1,gpuId2,...: List of GPU(s) to use, default is 0\n");
@@ -63,6 +63,7 @@ void printUsage() {
   printf(" -en EndKey: End Range Key to end scan; default 10000 Trillion from Start\n");
   printf(" -rb RandomBit: Start Key from a Random value in this bit range; default 256\n");
   printf(" -seq SeqRange: Total Keys to check from the start Random Key; default 10000 Trillion Keys\n");
+  printf(" -stride Stride: Use sparse range with a given stride\n");
   printf(" -l: List cuda enabled devices\n");
   printf(" -check: Check GPU kernel vs CPU\n");
   printf(" inFile: intput configuration file\n");
@@ -160,7 +161,7 @@ static string mergeDest = "";
 static string mergeDir = "";
 static string infoFile = "";
 static double maxStep = 0.0;
-static int wtimeout = 3000;
+static int wtimeout = 7000;
 static int ntimeout = 3000;
 static int port = 17403;
 static bool serverMode = false;
@@ -171,6 +172,7 @@ static string en = "";
 static int rb = 256;
 static string seq = "2386f26fc10000";	// 10000 Trillion Keys
 static bool splitWorkFile = false;
+static string stride = "";
 
 int main(int argc, char* argv[]) {
 
@@ -188,7 +190,7 @@ int main(int argc, char* argv[]) {
 #ifdef USE_SYMMETRY
   printf("Kangaroo v" RELEASE " (with symmetry)\n");
 #else
-  printf("Kangaroo v" RELEASE " : Added Start End Options\n");
+  printf("Kangaroo v" RELEASE " : Added Start End Stride Options\n");
 #endif
 
   while (a < argc) {
@@ -322,7 +324,11 @@ int main(int argc, char* argv[]) {
     } else if(strcmp(argv[a],"-check") == 0) {
       checkFlag = true;
       a++;
-    } else if(a == argc - 1) {
+	} else if (strcmp(argv[a], "-stride") == 0) {
+		CHECKARG("-stride", 1);
+		stride = string(argv[a]);
+		a++;
+	} else if(a == argc - 1) {
       configFile = string(argv[a]);
       a++;
     } else {
@@ -373,6 +379,9 @@ int main(int argc, char* argv[]) {
         exit(-1);
       }
     }
+	if (stride.length()>0) {
+		v->SetStride(stride);
+	}
     if(serverMode)
       v->RunServer();
     else
